@@ -11,7 +11,7 @@ services:
     image: index.docker.io/appsmith/appsmith-ce
     container_name: appsmith
     ports:
-      - "80:8080"
+      - "80:80"
       - "443:443"
       - "9001:9001"
     depends_on:
