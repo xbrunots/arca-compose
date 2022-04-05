@@ -1,2 +1,2 @@
 # arca-compose
-# https://hub.docker.com/r/supabase/supabase-dev
+# docker-compose up -d --build --force-recreate
