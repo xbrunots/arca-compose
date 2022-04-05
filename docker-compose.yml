@@ -1,27 +1,26 @@
-version: '3.6'
+version: '3'
 services:
-  postgres:
-    image: postgres:12
-    restart: always
-    volumes:
-      - db_data:/var/lib/postgresql/data
+  strapi:
+    image: strapi/strapi
     environment:
-      POSTGRES_PASSWORD: postgrespassword
-  appsmith:
-    image: index.docker.io/appsmith/appsmith-ce
-    container_name: appsmith
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: strapi
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi
+    volumes:
+      - ./app:/srv/app
     ports:
-      - "80:80"
-      - "443:443"
-      - "9001:9001"
+      - '1337:1337'
     depends_on:
-      - "postgres"
-    labels:
-      com.centurylinklabs.watchtower.enable: "true"
-    restart: unless-stopped
-  auto_update:
-    image: containrrr/watchtower:latest-dev
-    command: --schedule "0 0 * ? * *" --label-enable --cleanup
-    restart: unless-stopped
-volumes:
-  db_data:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi
+    volumes:
+      - ./data:/var/lib/postgresql/data
