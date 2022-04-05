@@ -17,7 +17,7 @@ services:
     volumes:
       - ./app:/srv/app
     ports:
-      - localhost:8000:1337
+      - 127.0.0.1:8000:1337
     depends_on:
       - db
 
