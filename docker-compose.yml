@@ -1,11 +1,12 @@
-etebase:
-  container_name: etebase
-  image: cvhariharan/etebase:v0.7.0-146-gd115040
-  environment:
-    ADMIN_USER: admin
-    ADMIN_EMAIL: admin@example.com
-    ADMIN_PASSWORD: password@123
-  ports:
-    - "5000:3735"
-  volumes:
-    - './etebase:/data'
+services:
+  mysrv:
+    command:
+      - appwrite/appwrite:0.10.4
+    image: ','
+    stdin_open: true
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${pwd}/appwrite:/usr/src/code/appwrite:rw
+    restart: always
+version: '3'
