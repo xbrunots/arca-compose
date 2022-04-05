@@ -1,73 +1,45 @@
-version: '3'
+version: '2'
+networks:
+  app-tier:
+    driver: bridge
 
 services:
-  appwrite-lite:
-    container_name: appwrite-lite
-    restart: always
-    ports:
-      - 7501:80
+  nginx:
+    build: ./nginx/
+    links:
+      - keystone
     networks:
-      - appwrite-lite
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - appwrite-lite-uploads:/storage/uploads:rw
-      - appwrite-lite-cache:/storage/cache:rw
-      - appwrite-lite-config:/storage/config:rw
-      - appwrite-lite-functions:/storage/functions:rw
-      - appwrite-lite-redis:/data:rw
-    depends_on:
-      - mariadb
-    environment:
-      - _APP_ENV
-      - _APP_SYSTEM_EMAIL_NAME
-      - _APP_SYSTEM_EMAIL_ADDRESS
-      - _APP_SYSTEM_SECURITY_EMAIL_ADDRESS
-      - _APP_OPTIONS_ABUSE
-      - _APP_OPTIONS_FORCE_HTTPS
-      - _APP_OPENSSL_KEY_V1
-      - _APP_DOMAIN
-      - _APP_DOMAIN_TARGET
-      - _APP_DB_HOST
-      - _APP_DB_PORT
-      - _APP_DB_SCHEMA
-      - _APP_DB_USER
-      - _APP_DB_PASS
-      - _APP_SMTP_HOST
-      - _APP_SMTP_PORT
-      - _APP_SMTP_SECURE
-      - _APP_SMTP_USERNAME
-      - _APP_SMTP_PASSWORD
-      - _APP_STORAGE_LIMIT
-      - _APP_FUNCTIONS_TIMEOUT
-      - _APP_FUNCTIONS_CONTAINERS
-      - _APP_FUNCTIONS_CPUS
-      - _APP_FUNCTIONS_MEMORY
-      - _APP_FUNCTIONS_MEMORY_SWAP
-
-  mariadb:
-    image: appwrite/mariadb:1.2.0 # fix issues when upgrading using: mysql_upgrade -u root -p
-    container_name: appwrite-lite-mariadb
-    restart: always
-    networks:
-      - appwrite-lite
-    volumes:
-      - appwrite-lite-mariadb:/var/lib/mysql:rw
+      - app-tier
     ports:
-      - "7502:3306"
+      - "8080:80"
+  mongodb:
+    build: ./db
+    volumes:
+      - ./db/mongodb:/var/lib/mongodb
+    ports:
+      - "27017:27017"
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=${_APP_DB_SCHEMA}
-      - MYSQL_USER=${_APP_DB_USER}
-      - MYSQL_PASSWORD=${_APP_DB_PASS}
-    command: 'mysqld --innodb-flush-method=fsync'
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME}
+      - MONGODB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+    networks:
+      - app-tier
 
-networks:
-  appwrite-lite:
-
-volumes:
-  appwrite-lite-mariadb:
-  appwrite-lite-redis:
-  appwrite-lite-cache:
-  appwrite-lite-uploads:
-  appwrite-lite-functions:
-  appwrite-lite-config:
+  keystone:
+    build:
+      context: ./keystone
+      args:
+        app_env: ${APP_ENV}
+    volumes:
+      - ./keystone/keystone.js:/usr/src/app/keystone.js
+      - ./keystone/models:/usr/src/app/models
+      - ./keystone/routes:/usr/src/app/routes
+      - ./keystone/updates:/usr/src/app/updates
+    ports:
+      - "3000:3000"
+    links:
+      - mongodb
+    networks:
+      - app-tier
