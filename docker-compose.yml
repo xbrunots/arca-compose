@@ -1,33 +1,11 @@
-version: "3"
-
-services:
-  app:
-    build:
-      context: ./app
-    container_name: strapi_v4_app
-    restart: always
-    environment:
-      NODE_ENV: production
-      DATABASE_CLIENT: postgres
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_NAME: app
-      DATABASE_USERNAME: user_xpto
-      DATABASE_PASSWORD: pass_xpto
-    volumes:
-      - ./app:/srv/app
-    ports:
-      - 127.0.0.1:8000:1337
-    depends_on:
-      - db
-
-  db:
-    image: postgres:13
-    container_name: strapi_v4_db
-    restart: always
-    environment:
-      POSTGRES_DB: app
-      POSTGRES_USER: user_xpto
-      POSTGRES_PASSWORD: pass_xpto
-    volumes:
-      - ./data:/var/lib/postgresql/data
+etebase:
+  container_name: etebase
+  image: cvhariharan/etebase:v0.7.0-146-gd115040
+  environment:
+    ADMIN_USER: admin
+    ADMIN_EMAIL: admin@example.com
+    ADMIN_PASSWORD: password@123
+  ports:
+    - "5000:3735"
+  volumes:
+    - './etebase:/data'
