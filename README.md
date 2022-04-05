@@ -1,2 +1,2 @@
 # arca-compose
-# postgres://postgres:postgrespassword@postgres:5432/postgres
+# https://hub.docker.com/r/supabase/supabase-dev
