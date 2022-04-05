@@ -31,7 +31,7 @@ services:
     build:
       context: ./keystone
       args:
-        app_env: ${APP_ENV}
+        app_env: 123123123
     volumes:
       - ./keystone/keystone.js:/usr/src/app/keystone.js
       - ./keystone/models:/usr/src/app/models
