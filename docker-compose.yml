@@ -1,26 +1,24 @@
 version: '3'
-services:
-  strapi:
-    image: strapi/strapi
-    environment:
-      DATABASE_CLIENT: postgres
-      DATABASE_NAME: strapi
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: strapi
-      DATABASE_PASSWORD: strapi
-    volumes:
-      - ./app:/srv/app
-    ports:
-      - '1337:1337'
-    depends_on:
-      - postgres
 
-  postgres:
-    image: postgres
+services:
+  supabase:
+    image: supabase/supabase-dev:latest
+    ports:
+      - "8000:8000"
     environment:
-      POSTGRES_DB: strapi
-      POSTGRES_USER: strapi
-      POSTGRES_PASSWORD: strapi
-    volumes:
-      - ./data:/var/lib/postgresql/data
+      DB_HOST: db
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+      DB_SCHEMA: public
+    depends_on:
+      - db
+  db:
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
